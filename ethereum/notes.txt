@@ -1,0 +1,32 @@
+<-- Virtual Environment -->
+
+module: virtualenv
+Links
+- https://towardsdatascience.com/virtual-environments-for-absolute-beginners-what-is-it-and-how-to-create-one-examples-a48da8982d4b
+- https://virtualenv.pypa.io/en/latest/user_guide.html#activators
+Command Line Steps
+
+Step 1: virtualenv env 
+--> only need to do this once. This will create the environment.
+
+Step 3: env\Scripts\
+
+
+
+Visual Studio C++ Packages
+
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\bin\HostX86\x64\cl.exe
+
+INCLUDE
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\SDK\ScopeCppSDK\SDK\include\ucrt;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\SDK\ScopeCppSDK\SDK\include\shared;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\SDK\ScopeCppSDK\SDK\include\um
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\ucrt
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um
+
+LIB
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\SDK\ScopeCppSDK\SDK\lib
+C:\Program Files (x86)\Windows Kits\10\Lib
+
+PATH
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\SDK\ScopeCppSDK\SDK\bin
+C:\Program Files (x86)\Windows Kits\10\bin
