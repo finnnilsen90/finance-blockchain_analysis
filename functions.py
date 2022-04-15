@@ -2,7 +2,11 @@ import requests
 import pandas as pd
 import numpy as np
 from datetime import date
+from matplotlib import pyplot
+import mplfinance as mpf
+import datetime
 import json
+import matplotlib.dates as mpl_dates
 
 def fetch_daily_data(symbol):
     pair_split = symbol.split('/')  # symbol must be in format XXX/XXX ie. BTC/EUR
@@ -16,6 +20,7 @@ def fetch_daily_data(symbol):
         data = pd.DataFrame(json.loads(response.text), columns=['unix', 'low', 'high', 'open', 'close', 'volume'])
         data['date'] = pd.to_datetime(data['unix'], unit='s')  # convert to a readable date
         data['vol_fiat'] = data['volume'] * data['close']      # multiply the BTC volume by closing price to approximate fiat volume
+        data['month'] = pd.to_datetime(data['date']).dt.strftime('%B') + ' ' + pd.to_datetime(data['date']).dt.strftime('%Y')
         data['ticker'] = symbol
 
 # if we failed to get any data, print an error...otherwise write the file
@@ -27,3 +32,44 @@ def fetch_daily_data(symbol):
         print("Did not receieve OK response from Coinbase API")
         
     return file
+
+def line_chart(data):
+    series = pd.read_csv(data, usecols=['date','close'])
+    series.sort_values(by = 'date', ascending = True, inplace = True)
+    pyplot.rcParams["figure.figsize"] = [12, 3.50]
+
+    # pyplot.figure(figsize=(50,0))
+    series.set_index('date').plot()
+    # series.show()
+
+def bar_graph(data):
+    date_series = pd.read_csv(data, usecols=['month']).values.tolist()
+    date_series = [date_series[i][0] for i in range(len(date_series))]
+    date_series = date_series[::-1] # reverse date order.
+    high_series  = pd.read_csv(data, usecols=['high']).values.tolist()
+    high_series = [high_series[i][0] for i in range(len(high_series))]
+    close_series  = pd.read_csv(data, usecols=['close']).values.tolist()
+    close_series = [close_series[i][0] for i in range(len(close_series))]
+
+    date_series
+    pyplot.bar(date_series, high_series)
+    pyplot.rcParams["figure.figsize"] = [25, 10]
+    # pyplot.bar(date_series, close_series)
+    pyplot.show()
+
+def candle_stick(data,lookback):
+    today = datetime.date.today()
+    days = datetime.timedelta(90)
+    lookback = today - days
+    date = lookback
+
+    date_candle = pd.read_csv(data,index_col=['date'],parse_dates=True,chunksize=1000)
+    date_candle = pd.concat((x.query("date > %a"%(date)) for x in date_candle))
+    date_candle = date_candle.sort_values(by='date')
+    date_candle.shape
+
+    date_candle.index.name = 'date'
+    date_candle.shape
+    date_candle.head(3)
+    date_candle.tail(3)
+    mpf.plot(date_candle,type='candle')
