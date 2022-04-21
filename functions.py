@@ -23,7 +23,7 @@ def fetch_daily_data(symbol):
         data['month'] = pd.to_datetime(data['date']).dt.strftime('%B') + ' ' + pd.to_datetime(data['date']).dt.strftime('%Y')
         data['ticker'] = symbol
 
-# if we failed to get any data, print an error...otherwise write the file
+    # if we failed to get any data, print an error...otherwise write the file
         if data is None:
             print("Did not return any data from Coinbase for this symbol")
         else:
@@ -57,19 +57,7 @@ def bar_graph(data):
     # pyplot.bar(date_series, close_series)
     pyplot.show()
 
-def candle_stick(data,lookback):
-    today = datetime.date.today()
-    days = datetime.timedelta(90)
-    lookback = today - days
-    date = lookback
+def candle_stick(data):
 
-    date_candle = pd.read_csv(data,index_col=['date'],parse_dates=True,chunksize=1000)
-    date_candle = pd.concat((x.query("date > %a"%(date)) for x in date_candle))
-    date_candle = date_candle.sort_values(by='date')
-    date_candle.shape
-
-    date_candle.index.name = 'date'
-    date_candle.shape
-    date_candle.head(3)
-    date_candle.tail(3)
-    mpf.plot(date_candle,type='candle')
+    data.index.name = 'date'
+    mpf.plot(data,type='candle')
