@@ -60,4 +60,4 @@ def bar_graph(data):
 def candle_stick(data):
 
     data.index.name = 'date'
-    mpf.plot(data,type='candle')
+    mpf.plot(data,type='candle', mav=(10, 20), volume=True)
