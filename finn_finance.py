@@ -8,6 +8,8 @@ import datetime
 import json
 import matplotlib.dates as mpl_dates
 
+### GET DATA ###
+
 def fetch_daily_data(symbol):
     pair_split = symbol.split('/')  # symbol must be in format XXX/XXX ie. BTC/EUR
     symbol = pair_split[0] + '-' + pair_split[1]
@@ -33,6 +35,25 @@ def fetch_daily_data(symbol):
         
     return file
 
+### CANDLE STICK GRAPH
+
+def candle_stick(data,name):
+
+    data.index.name = 'date'
+    mpf.plot(data,type='candle', mav=(10, 20), volume=True, style='charles', title=name)
+
+### BLOCKCHAIN FINANCE ####
+
+def satoshi_price(btc):
+    satoshi = btc/100000000
+    return satoshi
+
+def wei_price(eth):
+    wei = eth/pow(10,18)
+    return wei
+
+### OTHER GRAPHS NOT CURRENTLY USED ###
+
 def line_chart(data):
     series = pd.read_csv(data, usecols=['date','close'])
     series.sort_values(by = 'date', ascending = True, inplace = True)
@@ -57,12 +78,3 @@ def bar_graph(data):
     # pyplot.bar(date_series, close_series)
     pyplot.show()
 
-def candle_stick(data):
-
-    data.index.name = 'date'
-    mpf.plot(data,type='candle', mav=(10, 20), volume=True)
-
-
-def satoshi_price(btc):
-    satoshi = btc/100000000
-    return satoshi
