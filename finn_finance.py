@@ -75,7 +75,11 @@ class account_look:
 
             buy_price = transactions[i][1]/sub_coin
             coin = transactions[i][3]/buy_price
-            coin_owned = coin_owned + coin
+
+            if 'CREDIT' == transactions[i][4]
+                coin_owned = coin_owned + coin
+            elif 'DEBIT' == transactions[i][4]:
+                coin_owned = coin_owned - coin
 
             last_day = len(transactions) - 1
             if i == last_day:
