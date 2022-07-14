@@ -46,39 +46,42 @@ def candle_stick(data,name):
 
 class crypto_account:
 
-    def __init__(self,transactions,ticker):
+    def __init__(self,transactions):
         self.transactions = transactions
-        self.ticker = ticker
         self.sub_coin = [['BTC/USD',100000000],['ETH/USD',pow(10,18)]]
 
-    def filter_crypto_transactions(self):
+    def filter_crypto_transactions(self,ticker='All'):
 
         transactions = []
         for i in range(len(self.transactions)):
-            if self.ticker == self.transactions[i][0]:
+            if ticker == self.transactions['Asset'][i]+'/'+self.transactions['Spot Price Currency'][i]:
+                timestamp = pd.Timestamp(self.transactions['Timestamp'][i])
+                timestamp.strftime('%Y-%m-%d')
+                transactions.append([self.transactions['Asset'][i]+'/'+self.transactions['Spot Price Currency'][i],self.transactions['Spot Price at Transaction'][i],timestamp.strftime('%Y-%m-%d'),self.transactions['Subtotal'][i],self.transactions['Transaction Type'][i]])
+            elif ticker == 'All':
                 transactions.append(self.transactions[i])
         
         return transactions
 
-    def crypto_dollar_value(self):
+    def crypto_dollar_value(self,ticker='All'):
         coin_owned  = 0
         df = 0
         today = date.today()
         get_today = today.strftime("%Y-%m-%d")
 
-        transactions = self.filter_crypto_transactions()
+        transactions = self.filter_crypto_transactions(ticker=ticker)
 
         for i in range(len(transactions)):
             for s in range(len(self.sub_coin)):
-                if self.ticker == self.sub_coin[s][0]:
+                if ticker == self.sub_coin[s][0]:
                     sub_coin = self.sub_coin[s][1]
 
             buy_price = transactions[i][1]/sub_coin
             coin = transactions[i][3]/buy_price
 
-            if 'CREDIT' == transactions[i][4]:
+            if 'Buy' == transactions[i][4]:
                 coin_owned = coin_owned + coin
-            elif 'DEBIT' == transactions[i][4]:
+            elif 'Sell' == transactions[i][4]:
                 coin_owned = coin_owned - coin
 
             last_day = len(transactions) - 1
@@ -90,7 +93,7 @@ class crypto_account:
                 transaction_date_start = transactions[i][2]
                 transaction_date_end = transactions[j][2]
 
-            data_btc = fetch_daily_data(self.ticker)
+            data_btc = fetch_daily_data(ticker)
             date_value = pd.read_csv(data_btc,index_col=['date'],parse_dates=True,usecols = ['date','close'],chunksize=1000)
             date_value = pd.concat((x.query("date >= %a and date < %a"%(transaction_date_start,transaction_date_end)) for x in date_value))
             date_value['value'] = coin_owned*(date_value['close']/sub_coin)
@@ -105,6 +108,27 @@ class crypto_account:
             else:   
                 df = pd.concat([df,pivot], ignore_index=False)
                 
+        return df
+
+    def total_value(self):
+        transactions = self.filter_crypto_transactions()
+        tickers = [transactions[i][0] for i in range(len(transactions))]
+        tickers = list(dict.fromkeys(tickers))
+        df = 0
+
+        # pivot = self.crypto_dollar_value(ticker='ETH/USD')
+
+        for i in range(len(tickers)):
+            pivot = self.crypto_dollar_value(ticker=tickers[i])
+            def account_value(close):
+                return coin_owned*(close/sub_coin)
+            pivot = pd.pivot_table(date_value, values=['close'], index=['date'],aggfunc=[account_value])
+            
+            if i == 0:
+                df = pivot
+            else:   
+                df = pd.concat([df,pivot], ignore_index=False)
+
         return df
 
 ### BLOCKCHAIN FINANCE ####
