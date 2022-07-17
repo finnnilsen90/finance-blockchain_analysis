@@ -116,46 +116,46 @@ class crypto_account:
         return df
 
     def total_value(self):
+        # Transaction data.
         transactions = self.filter_crypto_transactions()
 
+        # Find Tickers in transactiond date.
         tickers = [transactions[i][0] for i in range(len(transactions))]
         tickers = list(dict.fromkeys(tickers))
 
+        # Get date per each ticker.
         coin_accounts = []
-
         for t in tickers:
             coin_accounts.append(self.crypto_dollar_value(ticker=t))
 
+        # Find account with most data.
+        max_val = 0
+        min_val = 0
+        for c in range(len(coin_accounts)):
+            if coin_accounts[max_val].shape[0] <=coin_accounts[c].shape[0]:
+                max_val = c
+            else:
+                min_val = c
+        
+        # Account with most data to date will set the first for loop.
+        index_eth = coin_accounts[max_val].index
+        index_btc = coin_accounts[min_val].index
+
+        # Sum data per timestamp and append to transactions array.
         transactions = []
-
-        # max_row = 0
-        # first_met = False
-        # for c in coin_accounts:
-        #     if first_met:
-        #         max_row = c
-        #     elif max_row == 0:
-        #         max_row = c
-        #         first_met = True
-                
-
-        index_btc = coin_accounts[0].index
-        index_eth = coin_accounts[1].index
- 
         for e in index_eth:
             timestamp_e = pd.Timestamp(e)
-            sum_of_date = [timestamp_e.strftime('%Y-%m-%d'),coin_accounts[1]['account_value']['close'][e]]
+            sum_of_date = [timestamp_e.strftime('%Y-%m-%d'),coin_accounts[1]['account_value']['close'][e]] # Set sum_of_date as the data for that day for the max_val account.
             for b in index_btc:
                 timestamp_b = pd.Timestamp(b)
-                if timestamp_b.strftime('%Y-%m-%d') == timestamp_e.strftime('%Y-%m-%d'):
+                if timestamp_b.strftime('%Y-%m-%d') == timestamp_e.strftime('%Y-%m-%d'): # If there is no data for the day in the other account move on.
                     sum_of_date = [timestamp_e.strftime('%Y-%m-%d'),coin_accounts[1]['account_value']['close'][e]+coin_accounts[0]['account_value']['close'][e]]
-    
             transactions.append(sum_of_date)
 
+        # Return data as dataframe.
         index = [i[0] for i in transactions]
         data = [i[1] for i in transactions]               
-
         return pd.DataFrame(data,index=index,columns=['close'])
-        # return coin_accounts
 
 ### BLOCKCHAIN FINANCE ####
 
