@@ -68,14 +68,16 @@ class crypto_account:
         return transactions
 
     def crypto_dollar_value(self,ticker='All'):
+        # Set variables.
         coin_owned  = 0
         df = 0
         today = date.today()
         get_today = today.strftime("%Y-%m-%d")
 
-        
+        # Get transactions.
         transactions = self.filter_crypto_transactions(ticker=ticker)
      
+        # Filter transactions according to the ticker.
         for i in range(len(transactions)):
             for s in range(len(self.sub_coin)):
                 if transactions[i][0] == self.sub_coin[s][0]:
