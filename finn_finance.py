@@ -53,13 +53,17 @@ class crypto_account:
     def filter_crypto_transactions(self,ticker='All'):
 
         transactions = []
+
+        def to_array(transact):
+            timestamp = pd.Timestamp(transact['Timestamp'][i])
+            timestamp.strftime('%Y-%m-%d')
+            return [self.transactions['Asset'][i]+'/'+transact['Spot Price Currency'][i],transact['Spot Price at Transaction'][i],timestamp.strftime('%Y-%m-%d'),transact['Subtotal'][i],transact['Transaction Type'][i]]
+        
         for i in range(len(self.transactions)):
             if ticker == self.transactions['Asset'][i]+'/'+self.transactions['Spot Price Currency'][i]:
-                timestamp = pd.Timestamp(self.transactions['Timestamp'][i])
-                timestamp.strftime('%Y-%m-%d')
-                transactions.append([self.transactions['Asset'][i]+'/'+self.transactions['Spot Price Currency'][i],self.transactions['Spot Price at Transaction'][i],timestamp.strftime('%Y-%m-%d'),self.transactions['Subtotal'][i],self.transactions['Transaction Type'][i]])
+                transactions.append(to_array(self.transactions))
             elif ticker == 'All':
-                transactions.append(self.transactions[i])
+                transactions.append(to_array(self.transactions))
         
         return transactions
 
@@ -69,11 +73,12 @@ class crypto_account:
         today = date.today()
         get_today = today.strftime("%Y-%m-%d")
 
+        
         transactions = self.filter_crypto_transactions(ticker=ticker)
-
+     
         for i in range(len(transactions)):
             for s in range(len(self.sub_coin)):
-                if ticker == self.sub_coin[s][0]:
+                if transactions[i][0] == self.sub_coin[s][0]:
                     sub_coin = self.sub_coin[s][1]
 
             buy_price = transactions[i][1]/sub_coin
@@ -93,7 +98,7 @@ class crypto_account:
                 transaction_date_start = transactions[i][2]
                 transaction_date_end = transactions[j][2]
 
-            data_btc = fetch_daily_data(ticker)
+            data_btc = fetch_daily_data(transactions[i][0])
             date_value = pd.read_csv(data_btc,index_col=['date'],parse_dates=True,usecols = ['date','close'],chunksize=1000)
             date_value = pd.concat((x.query("date >= %a and date < %a"%(transaction_date_start,transaction_date_end)) for x in date_value))
             date_value['value'] = coin_owned*(date_value['close']/sub_coin)
@@ -112,24 +117,45 @@ class crypto_account:
 
     def total_value(self):
         transactions = self.filter_crypto_transactions()
+
         tickers = [transactions[i][0] for i in range(len(transactions))]
         tickers = list(dict.fromkeys(tickers))
-        df = 0
 
-        # pivot = self.crypto_dollar_value(ticker='ETH/USD')
+        coin_accounts = []
 
-        for i in range(len(tickers)):
-            pivot = self.crypto_dollar_value(ticker=tickers[i])
-            def account_value(close):
-                return coin_owned*(close/sub_coin)
-            pivot = pd.pivot_table(date_value, values=['close'], index=['date'],aggfunc=[account_value])
-            
-            if i == 0:
-                df = pivot
-            else:   
-                df = pd.concat([df,pivot], ignore_index=False)
+        for t in tickers:
+            coin_accounts.append(self.crypto_dollar_value(ticker=t))
 
-        return df
+        transactions = []
+
+        # max_row = 0
+        # first_met = False
+        # for c in coin_accounts:
+        #     if first_met:
+        #         max_row = c
+        #     elif max_row == 0:
+        #         max_row = c
+        #         first_met = True
+                
+
+        index_btc = coin_accounts[0].index
+        index_eth = coin_accounts[1].index
+ 
+        for e in index_eth:
+            timestamp_e = pd.Timestamp(e)
+            sum_of_date = [timestamp_e.strftime('%Y-%m-%d'),coin_accounts[1]['account_value']['close'][e]]
+            for b in index_btc:
+                timestamp_b = pd.Timestamp(b)
+                if timestamp_b.strftime('%Y-%m-%d') == timestamp_e.strftime('%Y-%m-%d'):
+                    sum_of_date = [timestamp_e.strftime('%Y-%m-%d'),coin_accounts[1]['account_value']['close'][e]+coin_accounts[0]['account_value']['close'][e]]
+    
+            transactions.append(sum_of_date)
+
+        index = [i[0] for i in transactions]
+        data = [i[1] for i in transactions]               
+
+        return pd.DataFrame(data,index=index,columns=['close'])
+        # return coin_accounts
 
 ### BLOCKCHAIN FINANCE ####
 
