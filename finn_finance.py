@@ -35,14 +35,14 @@ def fetch_daily_data(symbol):
         
     return file
 
-### CANDLE STICK GRAPH
+### CANDLE STICK GRAPH ###
 
 def candle_stick(data,name):
 
     data.index.name = 'date'
     mpf.plot(data,type='candle', mav=(10, 20), volume=True, style='charles', title=name)
 
-### ACCOUNT MONITORING
+### ACCOUNT MONITORING ###
 
 class crypto_account:
 
@@ -159,79 +159,4 @@ class crypto_account:
         data = [i[1] for i in transactions]               
         return pd.DataFrame(data,index=index,columns=['close'])
 
-### BLOCKCHAIN FINANCE ####
-
-def satoshi_price(btc):
-    satoshi = btc/100000000
-    return satoshi
-
-def wei_price(eth):
-    wei = eth/pow(10,18)
-    return wei
-
 ### ACCOUNT PROJECTING ###
-
-# Calculate satoshi bit coin
-
-# def satoshi_price(btc):
-#     satoshi = btc/100000000
-#     return satoshi
-
-# bitcoin_price = [46726.59,38000.00,35000.00,30000.00]
-# bitcoin_sell_price = [70000.00,70000,70000,70000]
-# investment = [100,200,300,300]
-
-# satoshi_owned  = 0
-
-# for i in range(len(investment)):
-#     satoshi_buy_price = satoshi_price(bitcoin_price[i])
-#     satoshi = investment[i]/satoshi_buy_price
-    
-#     satoshi_owned = satoshi_owned + satoshi
-    
-#     print('')
-#     print('Investment '+str(i+1))
-#     print('Satoshi Buy Price: $'+str(satoshi_buy_price))
-#     print('Investment: $'+str(investment[i]))
-#     print('Satoshi: '+str(satoshi))
-
-#     satoshi_sell_price = satoshi_price(bitcoin_sell_price[i])
-#     value = satoshi_sell_price*satoshi
-#     print('Satoshi Sell Price: $'+str(satoshi_sell_price))
-#     print('Value: $'+str(value))
-#     print('Net: $'+str(value-investment[i]))
-
-# def wei_price(eth):
-#     wei = eth/pow(10,18)
-#     return wei
-
-# ethereum_price = [3525.92,2300.00,2100.00]
-# ethereum_sell_price = [4800.00,4800.00,4800.00]
-# investment = [100,300,300]
-
-# for i in range(len(investment)):
-#     ethereum_buy_price = wei_price(ethereum_price[i])
-#     wei = investment[i]/ethereum_buy_price
-    
-#     print('')
-#     print('Investment '+str(i+1))
-#     print('Wei Buy Price: $'+str(ethereum_buy_price))
-#     print('Investment: $'+str(investment[i]))
-#     print('Wei: '+str(wei))
-    
-#     wei_sell_price = wei_price(ethereum_sell_price[i])
-#     value = wei_sell_price*wei
-#     print('Wei Sell Price: $'+str(wei_sell_price))
-#     print('Value: $'+str(value))
-#     print('Net: $'+str(value-investment[i]))
-
-# # Pivot by monthly high and low
-# # Generate BTC CSV.
-# data = f.fetch_daily_data(ticker_crypto[0])
-# df = pd.read_csv(data)
-
-# df['month'] = pd.to_datetime(df['date']).dt.strftime('%B') # make a month column to preserve the order
-# df['year'] = pd.to_datetime(df['date']).dt.strftime('%Y') # make a month column to preserve the order
-# pivot = pd.pivot_table(df, values=['high','low'], index=['month','year','ticker'],aggfunc=np.average)
-# pivot = pivot.sort_values(by=['month','year'], ascending = [True, True])
-# pivot
