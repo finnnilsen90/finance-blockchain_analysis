@@ -1,19 +1,13 @@
-# Blockchain
-Blockchain exploration and innovation.
-
-## Ethereum
-
-First part of blockchain exploration will be using Ethereum and Python to gain a better understanding of the technical nuances of the blockchain and how it works.
+# Purpose
+The repo is inteaded to achieve 2 goals. Number 1, create tools and modules to do basic crypto and stock market analysis. Number 2, develop tools to query and understand various crypto currenices.
 
 ## Finance Analysis
 
-Created a jupyter notebook called crypto_analysis to analize the performance of the crypto market and personal crypto portfolios.
-Created a jupyter notebook called stock_analysis to analize the performance of the stock market and persona portfolios.
+Created a jupyter notebook called stock_analysis to analize the performance of the stock market and personal portfolios.
 
-=======
 ## Crypto Analysis
 
-Using Jupyter notebooks analyzing the performance of the crypto marketplace.
+Created a jupyter notebook called crypto_analysis to analize the performance of the crypto market and personal portfolios.
 
 ### Jupyter Notebook
 - crypto_analysis.ipynb: used to analyze coinbase transactions and overall market performance.
